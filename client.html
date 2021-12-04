@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>Cliet</h1>
+    <p id="stateLabel">Ready to connect</p>
+    <p id="connectIdLabel">ConnectionID: </p>
+    <div>
+        <label for="connectionUrl">Server URL</label>
+        <input id="connectionUrl"/>
+        <button id="connectButton" type="submit">Connect</button>
+        <button id="closeButton" disabled>Close Socket</button>
+    </div>
+    <div>
+        <label for="message">Message</label>
+        <input id="message"/>
+        <button id="sendButton" type="submit" disabled>Send</button>
+    </div>        
+    <div>
+        <label for="recipients">Recipients</label>
+        <input id="recipients" disabled/>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Message</th>
+                <th>Recipients</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="log">
+        </tbody>
+    </table>
+</body>
+
+</html>
