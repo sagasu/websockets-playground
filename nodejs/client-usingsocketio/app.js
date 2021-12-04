@@ -9,6 +9,6 @@ socket.on('message', (message) => {
 
 document.querySelector('button').onclick = () => {
     const message = document.querySelector('input').value;
-    socket.emit(`Hello from client: ${message}`);
+    socket.emit('message', `Hello from client: ${message}`);
 };
 

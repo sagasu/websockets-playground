@@ -13,3 +13,5 @@ Notice that both:
 * `nodejs/client-usingsocketio`
 
 Are really similar, the socketio one has a reference inside html file to socket.io lib hosted on cdn, that is about it. You can always instead of adding socketio client lib like this add it as an npm project if you are running react or angular.  
+
+You can run multiple clients and all of them are going to receive this same message and you will be able to tell who was the other - which client.  
