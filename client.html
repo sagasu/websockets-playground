@@ -9,7 +9,7 @@
 <body>
     <h1>Cliet</h1>
     <p id="stateLabel">Ready to connect</p>
-    <p id="connectIdLabel">ConnectionID: </p>
+    <p id="connectionId">ConnectionID: </p>
     <div>
         <label for="connectionUrl">Server URL</label>
         <input id="connectionUrl"/>
@@ -38,5 +38,52 @@
         </tbody>
     </table>
 </body>
+<script>
+    let connectionUrl = document.getElementById('connectionUrl');
+    let connectionButton = document.getElementById('connectButton');
+    let stateLabel = document.getElementById('stateLabel');
+    let sendMessage = document.getElementById('message');
+    let sendButton = document.getElementById('sendButton');
+    let log = document.getElementById('log');
+    let closeButton = document.getElementById('closeButton');
+    let recipient = document.getElementById('recipients');
+    let connectionId = document.getElementById('connectionId');
 
+    connectionUrl.value = "ws://localhost:5000";
+    connectionButton.onclick = function(){
+        stateLabel.innerHTML = "Connecting...";
+        let socket = new WebSocket(connectionUrl.value);
+        socket.onopen = function(event) {
+            updateState();
+            log.innerHTML += "<tr><td>Connection opened</td></tr>";
+
+        };
+
+        socket.onclose = function(event) {
+            updateState();
+            log.innerHTML += `<tr><td>Connection closed ${htmlEscape(event.code)} reason: ${htmlEscape(event.reason)}</td></tr>`;
+        };
+
+        socket.onerror = updateState();
+        socket.onmessage = function(event) {
+            let data = JSON.parse(event.data);
+            let message = data.message;
+            log.innerHTML += `<tr><td>${htmlEscape(message.id)}</td><td>${htmlEscape(message.message)}</td><td>${htmlEscape(message.recipients)}</td><td>${htmlEscape(message.date)}</td></tr>`;
+        };
+    };
+
+    const htmlEscape = function(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    };
+    const updateState = function(){
+        if(socket.readyState === WebSocket.OPEN){
+            stateLabel.innerHTML = "Connected";
+        }};
+
+</script>
 </html>
