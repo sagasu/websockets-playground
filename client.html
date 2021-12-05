@@ -48,31 +48,32 @@
     let closeButton = document.getElementById('closeButton');
     let recipient = document.getElementById('recipients');
     let connectionId = document.getElementById('connectionId');
+    let socket;
 
     connectionUrl.value = "ws://localhost:5000";
-    connectionButton.onclick = function(){
+    connectionButton.onclick = () => {
         stateLabel.innerHTML = "Connecting...";
-        let socket = new WebSocket(connectionUrl.value);
-        socket.onopen = function(event) {
+        socket = new WebSocket(connectionUrl.value);
+        socket.onopen = (event) => {
             updateState();
             log.innerHTML += "<tr><td>Connection opened</td></tr>";
 
         };
 
-        socket.onclose = function(event) {
+        socket.onclose = (event) => {
             updateState();
             log.innerHTML += `<tr><td>Connection closed ${htmlEscape(event.code)} reason: ${htmlEscape(event.reason)}</td></tr>`;
         };
 
         socket.onerror = updateState();
-        socket.onmessage = function(event) {
+        socket.onmessage = (event) => {
             let data = JSON.parse(event.data);
             let message = data.message;
             log.innerHTML += `<tr><td>${htmlEscape(message.id)}</td><td>${htmlEscape(message.message)}</td><td>${htmlEscape(message.recipients)}</td><td>${htmlEscape(message.date)}</td></tr>`;
         };
     };
 
-    const htmlEscape = function(str) {
+    const htmlEscape = (str) =>{
         return String(str)
             .replace(/&/g, '&amp;')
             .replace(/"/g, '&quot;')
@@ -80,10 +81,45 @@
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
     };
-    const updateState = function(){
-        if(socket.readyState === WebSocket.OPEN){
-            stateLabel.innerHTML = "Connected";
-        }};
+    const updateState = () =>{
+        const disable = () => {
+            sendMessage.disabled = true;
+            sendButton.disabled = true;
+            closeButton.disabled = true;
+            recipient.disabled = true;
+        };
+        const enable = () =>{
+            sendMessage.disabled = false;
+            sendButton.disabled = false;
+            closeButton.disabled = false;
+            recipient.disabled = false;
+        };
+        connectionUrl.disable = true;
+        connectionButton.disable = true;
+        if(!socket){
+            disable();
+        }else{
+            switch (socket.readystate){
+                case WebSocket.CLOSED:
+                    stateLabel.innerHTML = "Closed";
+                    connectionId.innerHTML = "ConnectionID: ";
+                    disable();
+                    connectionUrl.disabled = false;
+                    connectionButton.disabled = false;
+                    break;
+                case WebSocket.CLOSING:
+                    stateLabel.innerHTML = "Closing...";
+                    disable();
+                    break;
+                case WebSocket.Open:
+                    stateLabel.innerHTML = "Open";
+                    enable();
+                    break;
+                default:
+                    stateLabel.innerHTML = "Unknown WebSocket State: " + htmlEscape(socket.readyState);  
+                }
+            }
+    };
 
 </script>
 </html>
