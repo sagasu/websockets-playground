@@ -73,6 +73,29 @@
         };
     };
 
+    closeButton.onclick = () => {
+        if(!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log("Socket is not connected");
+            return;
+        }
+        socket.close(1000, "Closing from client");
+    };
+
+    sendButton.onclick = () => {
+        if(!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log("Socket is not connected");
+            return;
+        }
+
+        // let message = {
+        //     message: sendMessage.value,
+        //     recipients: recipient.value
+        // };
+        socket.send(JSON.stringify(sendMessage.value));
+        log.innerHTML += `<tr><td>${htmlEscape(sendMessage.value)}</td></tr>`;
+
+    };
+
     const htmlEscape = (str) =>{
         return String(str)
             .replace(/&/g, '&amp;')
