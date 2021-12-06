@@ -92,7 +92,7 @@
         //     recipients: recipient.value
         // };
         socket.send(JSON.stringify(sendMessage.value));
-        log.innerHTML += `<tr><td>${htmlEscape(sendMessage.value)}</td></tr>`;
+        log.innerHTML += `<tr><td>${connectionId.value}</td><td>Sever</td><td>Client</td><td>${htmlEscape(sendMessage.value)}</td></tr>`;
 
     };
 
@@ -117,8 +117,8 @@
             closeButton.disabled = false;
             recipient.disabled = false;
         };
-        connectionUrl.disable = true;
-        connectionButton.disable = true;
+        connectionUrl.disabled = true;
+        connectionButton.disabled = true;
         if(!socket){
             disable();
         }else{
@@ -139,7 +139,9 @@
                     enable();
                     break;
                 default:
-                    stateLabel.innerHTML = "Unknown WebSocket State: " + htmlEscape(socket.readyState);  
+                    stateLabel.innerHTML = "Unknown WebSocket State: " + htmlEscape(socket.readyState);
+                    disable();  
+                    break;
                 }
             }
     };
