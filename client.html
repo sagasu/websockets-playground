@@ -67,10 +67,12 @@
 
         socket.onerror = updateState();
         socket.onmessage = (event) => {
-            let data = JSON.parse(event.data);
-            let message = data.message;
-            log.innerHTML += `<tr><td>${htmlEscape(message.id)}</td><td>${htmlEscape(message.message)}</td><td>${htmlEscape(message.recipients)}</td><td>${htmlEscape(message.date)}</td></tr>`;
-        };
+            // let data = JSON.parse(event.data);
+            let message = event.data;
+            log.innerHTML += `<tr><td>server</td>
+                <td>client</td><td>${htmlEscape(message)}</td></tr>`;
+            isConnectionId(message);
+            };
     };
 
     closeButton.onclick = () => {
@@ -95,6 +97,12 @@
         log.innerHTML += `<tr><td>${connectionId.value}</td><td>Sever</td><td>Client</td><td>${htmlEscape(sendMessage.value)}</td></tr>`;
 
     };
+
+    function isConnectionId(str){
+        if(str.substring(0, 12) === "ConnectionId"){
+            connectionId.innerHTML = str.substring(13);
+        }
+    }
 
     const htmlEscape = (str) =>{
         return String(str)

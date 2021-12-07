@@ -12,10 +12,12 @@ namespace WebSocketsServer
     public class WebSocketServerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly WebSocketServerConnectionManager _manager;
 
-        public WebSocketServerMiddleware(RequestDelegate next)
+        public WebSocketServerMiddleware(RequestDelegate next, WebSocketServerConnectionManager manager)
         {
             _next = next;
+            _manager = manager;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -26,6 +28,8 @@ namespace WebSocketsServer
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
                 Console.WriteLine("WebSocket connected");
 
+                var connectionId = _manager.AddSocket(webSocket);
+                await SendConnectionIdAsync(webSocket, connectionId);
                 await ReceiveMessage(webSocket, async (result, buffer) =>
                 {
                     if (result.MessageType == WebSocketMessageType.Text)
@@ -46,6 +50,12 @@ namespace WebSocketsServer
                 // If it is not web socket, check with next middleware in a request pipeline.
                 await _next(context);
             }
+        }
+
+        private async Task SendConnectionIdAsync(WebSocket socket, string connectionId)
+        {
+            var buffer = Encoding.UTF8.GetBytes($"ConnectionId: {connectionId}");
+            await socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         private async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
